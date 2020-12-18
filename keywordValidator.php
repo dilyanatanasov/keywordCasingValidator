@@ -1,12 +1,7 @@
 <?php
 /**
  * Class KeywordValidator
- * Find incorrectly formatted keywords and format them searching in the following fields:
-- Google Keyword 1, 2(kw 6), 3, 4 and 5
-- All Keywords.
-- Google Keyword 1, 2(kw 6), 3, 4 and 5
-- Additional Keywords
-- Short Kws, Mid Kws and Long Kws
+ * Find incorrectly formatted keywords and format them
  * @author Dilyan Atanasov 18/02/2020
  */
 
@@ -19,23 +14,23 @@ class KeywordValidator
     CONST symbols = [",",";","-"];
 
     private $exceptionsLowercase = ["and","in","as","at","near","by","for","from","into","like","of","off","onto","on","over","to","with","an","a"];
-    private $gamechanger = false;
+    private $withStates = false;
 
     /**
      * @param $keywordString
-     * @param bool $gamechanger
+     * @param bool $withStates
      * @return string
      */
-    public function formatKeywords($keywordString, $gamechanger = false){
+    public function formatKeywords($keywordString, $withStates = false){
         if(empty($keywordString)){
             return $keywordString;
         }
-        // If $gamchanger is set to true remove overlaping kw's with states
-        if($gamechanger){
+        // If $withStates is set to true remove overlaping kw's with states
+        if($withStates){
             if (($key = array_search('in', $this->exceptionsLowercase)) !== false) {
                 unset($this->exceptionsLowercase[$key]);
             }
-            $this->gamechanger = true;
+            $this->withStates = true;
         }
 
         $keywordString = $this->prepareKeywordString($keywordString);
@@ -112,10 +107,10 @@ class KeywordValidator
                     $alternativeLowercaseKeyword = $lowercaseAlternatives[1].$incorrectlyFormattedKeywordString;
                     $keywordString = $this->formatCapitalizeExceptions($alternativeLowercaseKeyword, $keywordString);
                 }
-                // If the word is in the uppercase exceptions or a state(if gamechanger is set to true) make sure it's uppercase
+                // If the word is in the uppercase exceptions or a state(if withStates is set to true) make sure it's uppercase
             }else if(
                 in_array(strtoupper($incorrectlyFormattedKeywordString), self::exceptionsUppercase) ||
-                (in_array(strtoupper($incorrectlyFormattedKeywordString), self::states) && $this->gamechanger)
+                (in_array(strtoupper($incorrectlyFormattedKeywordString), self::states) && $this->withStates)
             ){
                 $keywordString = $this->formatUppercaseExceptions($oldKeywordString, $keywordString);
             }else{
